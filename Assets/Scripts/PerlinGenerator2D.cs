@@ -27,10 +27,10 @@ public class PerlinNoise3DGenerator : MonoBehaviour
     void Start()
     {
         permutation = MakePermutation();
-        Texture2D noiseTex = GenerateNoiseTexture(textureWidth, textureHeight);
-        noiseTex.filterMode = FilterMode.Point;
-        noiseTex.wrapMode = TextureWrapMode.Clamp;
-        GetComponent<Renderer>().material.SetTexture("_BaseMap", noiseTex);
+        // Texture2D noiseTex = GenerateNoiseTexture(textureWidth, textureHeight);
+        // noiseTex.filterMode = FilterMode.Point;
+        // noiseTex.wrapMode = TextureWrapMode.Clamp;
+        // GetComponent<Renderer>().material.SetTexture("_BaseMap", noiseTex);
         instanceMesh = caveInfo.cube.GetComponent<MeshFilter>().sharedMesh;
         instanceMaterial = new Material(caveInfo.cube.GetComponent<Renderer>().sharedMaterial);
     }
