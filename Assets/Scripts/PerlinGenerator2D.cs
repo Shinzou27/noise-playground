@@ -163,7 +163,7 @@ public class PerlinNoise3DGenerator : MonoBehaviour
     }
 
     public IEnumerator Generate() {
-        persistentMatrices.Clear(); // Limpa matrizes anteriores
+        persistentMatrices.Clear();
         
         for (int z = 0; z < caveInfo.caveDepth; z++) {
             for (int y = 0; y < textureHeight; y++) {
@@ -182,7 +182,7 @@ public class PerlinNoise3DGenerator : MonoBehaviour
                         ));
                     }
                 }
-                yield return null; // Permite renderização a cada linha Y
+                yield return null;
             }
         }
     }
@@ -200,7 +200,6 @@ public class PerlinNoise3DGenerator : MonoBehaviour
     }
     void Update()
     {
-        // Renderiza continuamente a cada frame
         if (persistentMatrices.Count > 0)
         {
             for (int i = 0; i < persistentMatrices.Count; i += 1023)
