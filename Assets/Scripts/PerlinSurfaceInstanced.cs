@@ -1,14 +1,15 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PerlinTerrainInstanced : MonoBehaviour
+public class PerlinSurfaceInstanced : MonoBehaviour, ITypeManager
 {
     [SerializeField] private Mesh mesh;
     [SerializeField] private Material material;
     [SerializeField] private Vector2 terrainGrid;
     [SerializeField] private bool minecraftLike = false;
-    [SerializeField] private float heightTemperature = 1f;
-    [SerializeField] private float speed = 1f;
+    [SerializeField] private int heightTemperature = 1;
+    [SerializeField] private int speed = 1;
 
     public Matrix4x4[] matrices;
     public Vector3[] basePositions;
@@ -16,6 +17,20 @@ public class PerlinTerrainInstanced : MonoBehaviour
 
     private const int INSTANCE_LIMIT = 10000; // Limite do Unity por chamada
 
+    void Start()
+    {
+        LoadVariables();
+        PlaygroundManager.OnVariableChange += LoadVariables;
+    }
+    void OnDestroy()
+    {
+        PlaygroundManager.OnVariableChange -= LoadVariables;
+    }
+    private void LoadVariables(object sender, EventArgs e)
+    {
+        LoadVariables();
+        Spawn();
+    }
     [ContextMenu("Generate")]
     public void Spawn()
     {
@@ -43,7 +58,7 @@ public class PerlinTerrainInstanced : MonoBehaviour
     {
         if (matrices == null) return;
 
-        elapsed += speed*Time.deltaTime;
+        elapsed += speed * Time.deltaTime;
         UpdateMatrices();
         DrawCubes();
     }
@@ -82,5 +97,14 @@ public class PerlinTerrainInstanced : MonoBehaviour
             Graphics.DrawMeshInstanced(mesh, 0, material, matrices, batchCount, null, UnityEngine.Rendering.ShadowCastingMode.Off, false);
             drawn += batchCount;
         }
+    }
+
+    public void LoadVariables()
+    {
+        PlaygroundManager.integerVariables.TryGetValue("SURFACE_WIDTH", out int size);
+        PlaygroundManager.integerVariables.TryGetValue("SURFACE_TEMPERATURE", out heightTemperature);
+        PlaygroundManager.integerVariables.TryGetValue("SURFACE_SPEED", out speed);
+        PlaygroundManager.booleanVariables.TryGetValue("SURFACE_HEIGHT", out minecraftLike);
+        terrainGrid = new(size, size);
     }
 }

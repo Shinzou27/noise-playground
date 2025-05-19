@@ -27,10 +27,12 @@ public class PlaygroundPerlinController : MonoBehaviour
     public void Change3DGen() {
         current = FlowState.GENERATOR_3D;
     }
-    void Update() {
+    void Update()
+    {
         menuContainer.SetActive(current == FlowState.MENU);
         stepByStep2DContainer.SetActive(current == FlowState.STEP_BY_STEP_2D);
         surfaceContainer.SetActive(current == FlowState.SURFACE_GENERATOR);
         generator3DContainer.SetActive(current == FlowState.GENERATOR_3D);
+        
     }
 }

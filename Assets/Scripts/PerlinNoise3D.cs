@@ -3,16 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PerlinNoise3DGenerator : MonoBehaviour
+public class PerlinNoise3D : MonoBehaviour, ITypeManager
 {
     const int Size = 256;
 
     [SerializeField] int textureWidth = 256;
     [SerializeField] int textureHeight = 256;
     [SerializeField] float scale = 8f;
-    [SerializeField] float zOffset = 0f;
+    [SerializeField] int zOffset = 0;
     [Serializable]
-    public struct CaveInfo {
+    public struct CaveInfo
+    {
         public GameObject cube;
         [Range(0, 1)]
         public float threshold;
@@ -26,13 +27,25 @@ public class PerlinNoise3DGenerator : MonoBehaviour
     private Material instanceMaterial;
     void Start()
     {
-        permutation = MakePermutation();
+        LoadVariables();
+        PlaygroundManager.OnVariableChange += LoadVariables;
         // Texture2D noiseTex = GenerateNoiseTexture(textureWidth, textureHeight);
         // noiseTex.filterMode = FilterMode.Point;
         // noiseTex.wrapMode = TextureWrapMode.Clamp;
         // GetComponent<Renderer>().material.SetTexture("_BaseMap", noiseTex);
         instanceMesh = caveInfo.cube.GetComponent<MeshFilter>().sharedMesh;
         instanceMaterial = new Material(caveInfo.cube.GetComponent<Renderer>().sharedMaterial);
+    }
+    void OnDestroy()
+    {
+        PlaygroundManager.OnVariableChange -= LoadVariables;
+
+    }
+
+    private void LoadVariables(object sender, EventArgs e)
+    {
+        LoadVariables();
+        GenerateCave();
     }
 
     Texture2D GenerateNoiseTexture(int width, int height)
@@ -158,26 +171,32 @@ public class PerlinNoise3DGenerator : MonoBehaviour
     }
 
     [ContextMenu("GenerateCave")]
-    public void GenerateCave() {
+    public void GenerateCave()
+    {
         StartCoroutine(Generate());
     }
 
-    public IEnumerator Generate() {
+    public IEnumerator Generate()
+    {
         persistentMatrices.Clear();
-        
-        for (int z = 0; z < caveInfo.caveDepth; z++) {
-            for (int y = 0; y < textureHeight; y++) {
-                for (int x = 0; x < textureWidth; x++) {
+
+        for (int z = 0; z < caveInfo.caveDepth; z++)
+        {
+            for (int y = 0; y < textureHeight; y++)
+            {
+                for (int x = 0; x < textureWidth; x++)
+                {
                     float nx = (float)x / textureWidth;
                     float ny = (float)y / textureHeight;
                     float nz = (float)z / caveInfo.caveDepth;
-                    
+
                     float value = Noise3D(nx * scale, ny * scale, nz * scale) * 0.5f + 0.5f;
-                    
-                    if (value > caveInfo.threshold) {
+
+                    if (value > caveInfo.threshold)
+                    {
                         persistentMatrices.Add(Matrix4x4.TRS(
-                            new Vector3(x, z, y), 
-                            Quaternion.identity, 
+                            new Vector3(x, z, y),
+                            Quaternion.identity,
                             Vector3.one
                         ));
                     }
@@ -186,12 +205,14 @@ public class PerlinNoise3DGenerator : MonoBehaviour
             }
         }
     }
-    private void DrawMeshCombined(List<Matrix4x4> matrices) {
+    private void DrawMeshCombined(List<Matrix4x4> matrices)
+    {
         Mesh mesh = caveInfo.cube.GetComponent<MeshFilter>().sharedMesh;
         Material material = caveInfo.cube.GetComponent<Renderer>().sharedMaterial;
-        
+
         // Divide em lotes de 1023 matrizes
-        for (int i = 0; i < matrices.Count; i += 1023) {
+        for (int i = 0; i < matrices.Count; i += 1023)
+        {
             int count = Mathf.Min(1023, matrices.Count - i);
             Matrix4x4[] batch = new Matrix4x4[count];
             matrices.CopyTo(i, batch, 0, count);
@@ -210,5 +231,16 @@ public class PerlinNoise3DGenerator : MonoBehaviour
                 Graphics.DrawMeshInstanced(instanceMesh, 0, instanceMaterial, batch);
             }
         }
+    }
+
+    public void LoadVariables()
+    {
+        PlaygroundManager.integerVariables.TryGetValue("CAVE_GEN_SIZE", out int size);
+        textureWidth = size;
+        textureHeight= size;
+        PlaygroundManager.integerVariables.TryGetValue("CAVE_GEN_DEPTH", out caveInfo.caveDepth);
+        PlaygroundManager.integerVariables.TryGetValue("CAVE_GEN_THRESHOLD", out int intThreshold);
+        caveInfo.threshold = intThreshold / 100f;
+        permutation = MakePermutation();
     }
 }

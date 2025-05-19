@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Perlin3D : MonoBehaviour {
+public class PerlinStepByStep : MonoBehaviour, ITypeManager {
   [Serializable]
   public struct MeshSet {
     public Renderer renderer;
@@ -27,27 +27,18 @@ public class Perlin3D : MonoBehaviour {
   [SerializeField] private Renderer[] renderers;
 
   void Start() {
-    offsets = new();
-    blendMappings = new();
-    mappings = new();
-    for (int i = 0; i < perlinPlaneRenderers.Length; i++) mappings.Add(new());
+    LoadVariables();
+    PlaygroundManager.OnVariableChange += LoadVariables;
+  }
+  void OnDestroy()
+  {
+    PlaygroundManager.OnVariableChange -= LoadVariables;
+  }
 
-    UnityEngine.Random.InitState(seed);
-    GenerateInfluenceVectors();
-
-    foreach (MeshSet renderer in perlinPlaneRenderers) {
-      if (renderer.generate) {
-        renderer.renderer.transform.localScale = new(grid.x * 0.1f, 1, grid.y * 0.1f);
-        renderer.renderer.transform.position = new(grid.x / 2, -0.01f, grid.y / 2);
-      } else {
-        renderer.renderer.gameObject.SetActive(false);
-      }
-    }
-
-    for (int i = 0; i < renderers.Length; i++) {
-      renderers[i].gameObject.transform.localScale = new(grid.x * 0.1f, 1, grid.y * 0.1f);
-      renderers[i].gameObject.transform.position = new((i%4*5)+grid.x / 2, -0.01f, -i/4*5+grid.y / 2);
-    }
+  private void LoadVariables(object sender, EventArgs e)
+  {
+    LoadVariables();
+    GenerateImage();
   }
 
   [ContextMenu("GenerateInfluenceVectors")]
@@ -61,8 +52,9 @@ public class Perlin3D : MonoBehaviour {
         GameObject line = Instantiate(LineDebug, Vector3.zero, Quaternion.Euler(new(0, angle, 0)));
         line.name = (i + j * (int)(grid.x + 1)).ToString();
         line.GetComponent<PixelData>().SetData(generated, angle);
-        Material material = new(line.GetComponent<LineRenderer>().material);
-        line.GetComponent<LineRenderer>().material = material;
+        line.GetComponent<LineRenderer>().enabled = false;
+        // Material material = new(line.GetComponent<LineRenderer>().material);
+        // line.GetComponent<LineRenderer>().material = material;
         vectors.Add(line);
         PutOnGrid(line, i, j);
       }
@@ -278,5 +270,37 @@ public class Perlin3D : MonoBehaviour {
     image.wrapMode = TextureWrapMode.Clamp;
     image.Apply();
     return image;
+  }
+
+  public void LoadVariables()
+  {
+    PlaygroundManager.integerVariables.TryGetValue("STEP_BY_STEP_SIZE", out int size);
+    PlaygroundManager.stringVariables.TryGetValue("STEP_BY_STEP_SEED", out string _seed);
+    PlaygroundManager.integerVariables.TryGetValue("STEP_BY_STEP_RESOLUTION", out int _resolution);
+    grid = new(size, size);
+    int.TryParse(_seed, out int result);
+    seed = result;
+    textureResolution = new(_resolution * size, _resolution * size);
+        offsets = new();
+    blendMappings = new();
+    mappings = new();
+    for (int i = 0; i < perlinPlaneRenderers.Length; i++) mappings.Add(new());
+
+    UnityEngine.Random.InitState(seed);
+    GenerateInfluenceVectors();
+
+    foreach (MeshSet renderer in perlinPlaneRenderers) {
+      if (renderer.generate) {
+        renderer.renderer.transform.localScale = new(grid.x * 0.1f, 1, grid.y * 0.1f);
+        renderer.renderer.transform.position = new(grid.x / 2, -0.01f, grid.y / 2);
+      } else {
+        renderer.renderer.gameObject.SetActive(false);
+      }
+    }
+
+    for (int i = 0; i < renderers.Length; i++) {
+      renderers[i].gameObject.transform.localScale = new(grid.x * 0.1f, 1, grid.y * 0.1f);
+      renderers[i].gameObject.transform.position = new((i%4*5)+grid.x / 2, -0.01f, -i/4*5+grid.y / 2);
+    }
   }
 }

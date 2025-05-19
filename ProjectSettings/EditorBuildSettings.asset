@@ -6,6 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/NoiseScene.unity
+    path: Assets/Scenes/MenuScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/CaveGenScene.unity
+    guid: 6f9927dca5c427849aab1fea85b04e0f
+  - enabled: 1
+    path: Assets/Scenes/StepByStepScene.unity
+    guid: f099ed0d4f383394186b64654208e5ae
+  - enabled: 1
+    path: Assets/Scenes/SurfaceGenScene.unity
+    guid: 0ff00889f0c8b3e4f9052257d4a0c0c1
   m_configObjects: {}
