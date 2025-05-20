@@ -483,6 +483,7 @@ GameObject:
   - component: {fileID: 8944938035295987975}
   - component: {fileID: 7633179387726417495}
   - component: {fileID: 1324850291882764680}
+  - component: {fileID: 1659842671879244582}
   m_Layer: 5
   m_Name: Arrow
   m_TagString: Untagged
@@ -589,6 +590,21 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 7633179387726417495}
   m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1659842671879244582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 798850957255904503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3e2bbd095ead8a4bab262e0352dcec6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onHover:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 8997101953228843435}
