@@ -109,5 +109,8 @@ public class PlaygroundTypeContoller : MonoBehaviour
   public void ReturnToMenu()
   {
     SceneManager.LoadSceneAsync(PlaygroundScenes.MenuScene.ToString());
+    PlaygroundManager.integerVariables.Clear();
+    PlaygroundManager.stringVariables.Clear();
+    PlaygroundManager.booleanVariables.Clear();
   }
 }

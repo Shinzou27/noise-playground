@@ -291,16 +291,16 @@ public class PerlinStepByStep : MonoBehaviour, ITypeManager {
 
     foreach (MeshSet renderer in perlinPlaneRenderers) {
       if (renderer.generate) {
-        renderer.renderer.transform.localScale = new(grid.x * 0.1f, 1, grid.y * 0.1f);
-        renderer.renderer.transform.position = new(grid.x / 2, -0.01f, grid.y / 2);
+        renderer.renderer.transform.localScale = new(4 * 0.1f, 1, 4 * 0.1f);
+        renderer.renderer.transform.position = new(4 / 2, -0.01f, 4 / 2);
       } else {
         renderer.renderer.gameObject.SetActive(false);
       }
     }
 
     for (int i = 0; i < renderers.Length; i++) {
-      renderers[i].gameObject.transform.localScale = new(grid.x * 0.1f, 1, grid.y * 0.1f);
-      renderers[i].gameObject.transform.position = new((i%4*5)+grid.x / 2, -0.01f, -i/4*5+grid.y / 2);
+      renderers[i].gameObject.transform.localScale = new(4 * 0.1f, 1, 4 * 0.1f);
+      renderers[i].gameObject.transform.position = new((i%4*5)+4 / 2, -0.01f, -i/4*5+4 / 2);
     }
   }
 }
